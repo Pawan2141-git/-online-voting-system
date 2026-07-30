@@ -503,11 +503,17 @@ def admin_candidate_create(election_id):
         photo_url = form.photo_url.data.strip() if form.photo_url.data else None
         
         if form.photo_file.data:
-            file = form.photo_file.data
-            filename = secure_filename(f"cand_{election_id}_{int(datetime.utcnow().timestamp())}_{file.filename}")
-            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(upload_path)
-            photo_url = url_for('static', filename=f'uploads/{filename}')
+            try:
+                os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+                file = form.photo_file.data
+                filename = secure_filename(f"cand_{election_id}_{int(datetime.utcnow().timestamp())}_{file.filename}")
+                upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(upload_path)
+                photo_url = url_for('static', filename=f'uploads/{filename}')
+            except Exception as e:
+                app.logger.error(f"Error saving uploaded photo: {e}")
+                if not photo_url:
+                    photo_url = None
 
         candidate = Candidate(
             election_id=election_id,
@@ -537,11 +543,15 @@ def admin_candidate_edit(candidate_id):
         candidate.party = form.party.data.strip()
         
         if form.photo_file.data:
-            file = form.photo_file.data
-            filename = secure_filename(f"cand_{candidate.election_id}_{int(datetime.utcnow().timestamp())}_{file.filename}")
-            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(upload_path)
-            candidate.photo_url = url_for('static', filename=f'uploads/{filename}')
+            try:
+                os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+                file = form.photo_file.data
+                filename = secure_filename(f"cand_{candidate.election_id}_{int(datetime.utcnow().timestamp())}_{file.filename}")
+                upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(upload_path)
+                candidate.photo_url = url_for('static', filename=f'uploads/{filename}')
+            except Exception as e:
+                app.logger.error(f"Error saving uploaded photo: {e}")
         elif form.photo_url.data:
             candidate.photo_url = form.photo_url.data.strip()
 
