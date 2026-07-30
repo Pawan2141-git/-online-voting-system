@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MatDan India - Digital Voting Portal{% endblock %}</title>
+    <!-- Local Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}">
+    <!-- Local Bootstrap Icons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Local Chart.js -->
+    <script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.min.js') }}"></script>
+    <!-- Local Socket.IO Client -->
+    <script src="{{ url_for('static', filename='vendor/socketio/socket.io.min.js') }}"></script>
+
+
+</head>
+<body>
+
+    <!-- Tricolor Top Accent Line -->
+    <div class="tricolor-bar"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+                <i class="bi bi-box-seam-fill text-warning fs-3"></i>
+                <div class="d-flex flex-column lh-1">
+                    <span>MatDan India</span>
+                    <small style="font-size: 0.65rem; color: #94A3B8; letter-spacing: 0.5px;">DIGITAL ELECTORAL PORTAL</small>
+                </div>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}"><i class="bi bi-speedometer2 me-1"></i> CEO Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_elections') }}"><i class="bi bi-journal-check me-1"></i> Elections</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_voters') }}"><i class="bi bi-people me-1"></i> Electoral Roll</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_voters_import') }}"><i class="bi bi-file-earmark-arrow-up me-1"></i> Bulk Import</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_audit_logs') }}"><i class="bi bi-shield-check me-1"></i> Audit Logs</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('voter_dashboard') }}"><i class="bi bi-grid-fill me-1"></i> Elections Dashboard</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}"><i class="bi bi-house-door me-1"></i> Home</a></li>
+                    {% endif %}
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Election Reminders Push Notification Toggle -->
+                    <button type="button" id="btnNotifyToggle" class="btn btn-sm btn-outline-light rounded-circle p-2" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;" title="Enable Election Reminders 🔔">
+                        <i class="bi bi-bell-fill fs-5"></i>
+                    </button>
+
+                    <!-- Theme Toggle Switch -->
+                    <button type="button" id="themeToggleBtn" class="btn btn-sm btn-outline-light rounded-circle p-2 me-1" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;" title="Toggle Dark/Light Mode">
+                        <i class="bi bi-moon-stars-fill text-light fs-5"></i>
+                    </button>
+
+
+                    {% if current_user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i> {{ current_user.full_name }}
+                                {% if current_user.is_admin %}
+                                    <span class="badge bg-danger ms-1">ECI Officer</span>
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                <li><span class="dropdown-item-text text-muted small"><i class="bi bi-card-heading me-1"></i> EPIC No: {{ current_user.voter_id }}</span></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-1"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light rounded-pill px-4 me-1">Log In</a>
+                        <a href="{{ url_for('register') }}" class="btn btn-primary-custom rounded-pill px-4">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages Container -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 rounded-3 mb-3 d-flex align-items-center gap-2" role="alert">
+                        {% if category == 'success' %}
+                            <i class="bi bi-check-circle-fill fs-5"></i>
+                        {% elif category == 'danger' %}
+                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        {% elif category == 'warning' %}
+                            <i class="bi bi-exclamation-circle-fill fs-5"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle-fill fs-5"></i>
+                        {% endif %}
+                        <div>{{ message }}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Error state fallback block -->
+    {% if error_title %}
+    <div class="container my-5 py-5 text-center">
+        <div class="display-1 text-muted mb-3"><i class="bi bi-shield-exclamation text-danger"></i></div>
+        <h2 class="fw-bold mb-2">{{ error_title }}</h2>
+        <p class="text-secondary lead mb-4">{{ error_msg }}</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary-custom rounded-pill px-4">Return to Portal Homepage</a>
+    </div>
+    {% else %}
+        <!-- Main Content -->
+        {% block content %}{% endblock %}
+    {% endif %}
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+                <i class="bi bi-shield-lock-fill text-warning"></i>
+                <span class="fw-semibold text-white">MatDan India</span> - Digital Election Infrastructure
+            </div>
+            <p class="small text-muted mb-0">&copy; 2026 E-Voting Portal India. Encrypted, Anonymized & Verifiable Ballot System.</p>
+        </div>
+    </footer>
+
+    <!-- Local Bootstrap 5 JS Bundle -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+
+</html>

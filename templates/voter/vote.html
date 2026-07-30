@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Cast Vote: {{ election.title }} - MatDan India{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="mb-4 text-center">
+        <a href="{{ url_for('voter_dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill mb-3">
+            <i class="bi bi-arrow-left me-1"></i> Back to Elections
+        </a>
+        <h2 class="fw-bold mb-1">{{ election.title }}</h2>
+        <p class="text-secondary max-w-xl mx-auto" style="max-width: 600px;">{{ election.description }}</p>
+        
+        <div class="d-inline-block bg-white border p-2 px-3 rounded-pill shadow-sm mt-2">
+            <small class="text-muted me-2"><i class="bi bi-clock me-1"></i> Polling Time Remaining:</small>
+            <div class="countdown-box py-1 px-2 d-inline-flex fs-6" data-countdown="{{ election.seconds_remaining() }}">
+                <div class="countdown-unit"><span class="cd-days">00</span><span>D</span></div>:
+                <div class="countdown-unit"><span class="cd-hours">00</span><span>H</span></div>:
+                <div class="countdown-unit"><span class="cd-minutes">00</span><span>M</span></div>:
+                <div class="countdown-unit"><span class="cd-seconds">00</span><span>S</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Render Form Validation Errors if Any -->
+    {% if form.candidate_id.errors %}
+        <div class="alert alert-danger alert-dismissible fade show text-center max-w-xl mx-auto rounded-3 shadow-sm mb-4" role="alert" style="max-width: 600px;">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {% for error in form.candidate_id.errors %}{{ error }}{% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
+    <form method="POST" id="voteForm" action="{{ url_for('voter_vote', election_id=election.id) }}">
+        {{ form.hidden_tag() }}
+
+        <div class="row g-4 mb-4 justify-content-center">
+            {% for candidate in candidates %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="candidate-radio-card h-100 d-flex flex-column justify-content-between"
+                         data-candidate-id="{{ candidate.id }}"
+                         data-candidate-name="{{ candidate.name }}"
+                         data-candidate-party="{{ candidate.party }}">
+                        
+                        <input type="radio" name="candidate_id" value="{{ candidate.id }}" id="candidate_{{ candidate.id }}" required {% if form.candidate_id.data == candidate.id %}checked{% endif %}>
+
+                        <div>
+                            <div class="text-center mb-3">
+                                {% if candidate.photo_url %}
+                                    <img src="{{ candidate.photo_url }}" alt="{{ candidate.name }}" class="candidate-avatar mb-2 shadow-sm">
+                                {% else %}
+                                    <div class="candidate-avatar bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center mb-2 fs-2 fw-bold mx-auto">
+                                        {{ candidate.name[0] }}
+                                    </div>
+                                {% endif %}
+                                <h5 class="fw-bold mb-1">{{ candidate.name }}</h5>
+                                <span class="badge bg-secondary-subtle text-secondary border px-3 py-1 rounded-pill">{{ candidate.party }}</span>
+                            </div>
+                            <p class="text-muted small mb-0">{{ candidate.bio or "No additional manifesto provided." }}</p>
+                        </div>
+
+                        <div class="mt-3 text-center pt-3 border-top">
+                            <span class="small fw-semibold text-primary select-hint"><i class="bi bi-cursor me-1"></i> Click to select candidate</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit Action Trigger -->
+        <div class="text-center py-3">
+            <button type="button" id="voteModalTrigger" class="btn btn-primary-custom btn-lg rounded-pill px-5 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#confirmVoteModal">
+                <i class="bi bi-shield-check me-2"></i> Review & Submit Vote
+            </button>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div class="modal fade" id="confirmVoteModal" tabindex="-1" aria-labelledby="confirmVoteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title fw-bold" id="confirmVoteModalLabel">
+                            <i class="bi bi-shield-lock text-warning me-2"></i> Confirm Your Vote
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center p-4">
+                        <p class="text-muted mb-2">You are about to cast your ballot for:</p>
+                        <div class="card bg-light border-0 p-3 mb-3">
+                            <h4 class="fw-bold text-primary mb-1" id="modalCandidateName">Selected Candidate</h4>
+                            <span class="badge bg-secondary-subtle text-secondary border d-inline-block mx-auto rounded-pill" id="modalCandidateParty">Party Name</span>
+                        </div>
+                        <div class="alert alert-warning small text-start mb-0">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            <strong>Important:</strong> Votes are final and cannot be changed or re-cast after submission. Your vote will be cryptographically anonymized.
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Change Selection</button>
+                        <button type="submit" class="btn btn-primary-custom rounded-pill px-5 fw-bold">
+                            <i class="bi bi-check-circle-fill me-1"></i> Confirm & Submit Vote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

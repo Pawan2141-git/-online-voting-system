@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card custom-card p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <a href="{{ url_for('admin_candidates', election_id=election.id) }}" class="btn btn-outline-secondary btn-sm rounded-circle" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h3 class="fw-bold mb-0">{{ title }}</h3>
+                        <p class="text-muted small mb-0">For election: <strong>{{ election.title }}</strong></p>
+                    </div>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label fw-semibold") }}
+                        {{ form.name(class="form-control rounded-3", placeholder="e.g. Sarah Jenkins") }}
+                        {% if form.name.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.name.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.party.label(class="form-label fw-semibold") }}
+                        {{ form.party(class="form-control rounded-3", placeholder="e.g. Progressive Campus Alliance / Independent") }}
+                        {% if form.party.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.party.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.photo_file.label(class="form-label fw-semibold") }}
+                        {{ form.photo_file(class="form-control rounded-3") }}
+                        {% if form.photo_file.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.photo_file.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.photo_url.label(class="form-label fw-semibold") }}
+                        {{ form.photo_url(class="form-control rounded-3", placeholder="https://example.com/photo.jpg (Optional)") }}
+                        {% if form.photo_url.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.photo_url.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+
+                    <div class="mb-4">
+                        {{ form.bio.label(class="form-label fw-semibold") }}
+                        {{ form.bio(class="form-control rounded-3", rows=4, placeholder="Manifesto, background, key proposals...") }}
+                        {% if form.bio.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.bio.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin_candidates', election_id=election.id) }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                        {{ form.submit(class="btn btn-primary-custom rounded-pill px-4") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Voter Registration - MatDan India{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-7">
+            <div class="card custom-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-person-plus-fill fs-3"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Electoral Voter Registration</h3>
+                    <p class="text-muted small">Register your official EPIC Voter ID details to participate in digital elections</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('register') }}" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.full_name.label(class="form-label fw-semibold") }}
+                        {{ form.full_name(class="form-control rounded-3", placeholder="e.g. Rajesh Kumar Sharma") }}
+                        {% if form.full_name.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.full_name.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.email.label(class="form-label fw-semibold") }}
+                            {{ form.email(class="form-control rounded-3", placeholder="name@example.in") }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form.voter_id.label(class="form-label fw-semibold") }}
+                            {{ form.voter_id(class="form-control rounded-3", placeholder="e.g. DLX1234567") }}
+                            {% if form.voter_id.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.voter_id.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            {{ form.date_of_birth.label(class="form-label fw-semibold") }}
+                            {{ form.date_of_birth(class="form-control rounded-3", type="date") }}
+                            {% if form.date_of_birth.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.date_of_birth.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% else %}
+                                <small class="form-text text-muted" style="font-size: 0.75rem;">Must be at least 18 years old</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            {{ form.state.label(class="form-label fw-semibold") }}
+                            {{ form.state(class="form-select rounded-3") }}
+                            {% if form.state.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.state.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            {{ form.constituency.label(class="form-label fw-semibold") }}
+                            {{ form.constituency(class="form-control rounded-3", placeholder="e.g. New Delhi") }}
+                            {% if form.constituency.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.constituency.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.password.label(class="form-label fw-semibold") }}
+                            {{ form.password(class="form-control rounded-3", placeholder="At least 6 characters") }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.password.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            {{ form.confirm_password.label(class="form-label fw-semibold") }}
+                            {{ form.confirm_password(class="form-control rounded-3", placeholder="Re-type password") }}
+                            {% if form.confirm_password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.confirm_password.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        {{ form.submit(class="btn btn-primary-custom btn-lg rounded-pill fw-bold") }}
+                    </div>
+                </form>
+
+                <div class="text-center mt-3 pt-3 border-top">
+                    <p class="text-muted small mb-0">Already registered? <a href="{{ url_for('login') }}" class="text-primary fw-semibold text-decoration-none">Log in here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

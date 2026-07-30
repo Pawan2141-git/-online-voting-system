@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}MatDan India - Official Digital Voting Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section mb-5">
+    <div class="container text-center py-4">
+        <div class="hero-badge">
+            <i class="bi bi-shield-check me-1"></i> Official E-Voting Portal of India
+        </div>
+        <h1 class="display-4 fw-bold mb-3">Empowering Digital Democracy in India</h1>
+        <p class="lead text-light text-opacity-75 max-w-2xl mx-auto mb-4" style="max-width: 680px;">
+            Cast your vote securely using your verified EPIC Voter ID. Powered by 256-bit cryptographic ballot anonymization, real-time tracking, and instant audit reporting.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('voter_dashboard') }}" class="btn btn-primary-custom btn-lg rounded-pill px-5 shadow">
+                    <i class="bi bi-box-seam me-2"></i> Go to Voter Dashboard
+                </a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary-custom btn-lg rounded-pill px-4 shadow">
+                    <i class="bi bi-person-plus-fill me-2"></i> Register Voter Account
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Voter Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Active Elections Section -->
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-broadcast text-danger me-2"></i> Active General & State Elections</h3>
+            <p class="text-muted small mb-0">Live parliamentary and assembly elections currently open for voting</p>
+        </div>
+    </div>
+
+    {% if active_elections %}
+        <div class="row g-4">
+            {% for e in active_elections %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card custom-card h-100 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge badge-status-active"><i class="bi bi-record-circle me-1"></i> Voting Live</span>
+                                <small class="text-muted"><i class="bi bi-people me-1"></i> {{ e.candidates|length }} Candidates / NOTA</small>
+                            </div>
+                            <h5 class="fw-bold mb-2">{{ e.title }}</h5>
+                            <p class="text-secondary small mb-3">{{ e.description|truncate(120) }}</p>
+                        </div>
+                        <div>
+                            <div class="bg-light p-2 rounded-3 text-center mb-3 border">
+                                <small class="text-muted d-block mb-1">Polling Time Remaining (IST):</small>
+                                <div class="countdown-box" data-countdown="{{ e.seconds_remaining() }}">
+                                    <div class="countdown-unit"><span class="cd-days">00</span><span>Days</span></div>:
+                                    <div class="countdown-unit"><span class="cd-hours">00</span><span>Hrs</span></div>:
+                                    <div class="countdown-unit"><span class="cd-minutes">00</span><span>Min</span></div>:
+                                    <div class="countdown-unit"><span class="cd-seconds">00</span><span>Sec</span></div>
+                                </div>
+                            </div>
+                            <a href="{{ url_for('voter_vote', election_id=e.id) }}" class="btn btn-primary-custom w-100 rounded-pill">
+                                <i class="bi bi-check2-square me-1"></i> Cast Vote Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card custom-card p-5 text-center bg-white">
+            <div class="fs-1 text-muted mb-2"><i class="bi bi-inbox"></i></div>
+            <h5 class="fw-semibold mb-1">No Active Polling Sessions Right Now</h5>
+            <p class="text-muted small">Check upcoming parliamentary schedules below or check back later.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Features Overview -->
+<section class="bg-white py-5 my-5 border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h3 class="fw-bold mb-2">Key Features of MatDan India</h3>
+            <p class="text-muted">Built with military-grade encryption and Election Commission security standards</p>
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="bi bi-card-heading fs-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">EPIC Voter ID Verification</h5>
+                    <p class="text-muted small">Unique Electoral Photo Identity Card (EPIC) verification guarantees only eligible registered citizens vote.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="bi bi-shield-check fs-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Anonymized Ballot Engine</h5>
+                    <p class="text-muted small">Votes are cryptographically detached from voter identities to ensure 100% secret & un-linkable ballots.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="bi bi-file-earmark-check fs-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">NOTA & Instant Counting</h5>
+                    <p class="text-muted small">Includes None Of The Above (NOTA) choice and automated vote aggregation with downloadable CSV & PDF audit reports.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

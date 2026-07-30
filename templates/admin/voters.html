@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Electoral Roll - Admin{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-people text-primary me-2"></i> Official Electoral Roll</h2>
+            <p class="text-muted small mb-0">List of verified & eligible registered Indian voters</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin_voters_import') }}" class="btn btn-outline-primary rounded-pill px-3">
+                <i class="bi bi-file-earmark-arrow-up me-1"></i> Bulk Import CSV
+            </a>
+            <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill d-flex align-items-center">{{ voters|length }} Verified Voters</span>
+        </div>
+    </div>
+
+    <div class="card custom-card border-0 p-4 bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Voter Name</th>
+                        <th>EPIC Voter ID</th>
+                        <th>State & Constituency</th>
+                        <th>Age Eligibility</th>
+                        <th>Ballots Cast</th>
+                        <th>Registration Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in voters %}
+                        <tr>
+                            <td class="text-muted">{{ loop.index }}</td>
+                            <td class="fw-bold">
+                                <i class="bi bi-person-circle text-secondary me-2"></i>{{ v.full_name }}
+                                <div class="small text-muted font-monospace fw-normal">{{ v.email }}</div>
+                            </td>
+                            <td><code>{{ v.voter_id }}</code></td>
+                            <td>
+                                <div class="fw-semibold small">{{ v.state or "Delhi (NCT)" }}</div>
+                                <div class="small text-muted">{{ v.constituency or "New Delhi" }}</div>
+                            </td>
+                            <td>
+                                {% if v.is_eligible_voter %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                        <i class="bi bi-shield-check me-1"></i> Eligible ({{ v.age }} yrs)
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
+                                        <i class="bi bi-exclamation-triangle me-1"></i> Ineligible (<18)
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill">
+                                    <i class="bi bi-box-seam me-1"></i> {{ v.vote_records|length }} Ballots
+                                </span>
+                            </td>
+                            <td class="small text-muted">{{ v.created_at.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No registered voters found in electoral roll.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

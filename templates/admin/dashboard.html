@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - VoteDirect{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i> Admin Control Dashboard</h2>
+            <p class="text-muted small mb-0">Overview of elections, voter participation, and system metrics</p>
+        </div>
+        <a href="{{ url_for('admin_election_create') }}" class="btn btn-primary-custom rounded-pill">
+            <i class="bi bi-plus-lg me-1"></i> Create New Election
+        </a>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card custom-card p-3 border-0 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 fs-3">
+                        <i class="bi bi-journal-check"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Total Elections</div>
+                        <div class="fs-3 fw-bold">{{ total_elections }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card custom-card p-3 border-0 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-3 fs-3">
+                        <i class="bi bi-record-circle"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Active Elections</div>
+                        <div class="fs-3 fw-bold">{{ active_count }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card custom-card p-3 border-0 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-info bg-opacity-10 text-info p-3 rounded-3 fs-3">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Registered Voters</div>
+                        <div class="fs-3 fw-bold">{{ total_voters }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card custom-card p-3 border-0 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-3 fs-3">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-medium">Total Votes Cast</div>
+                        <div class="fs-3 fw-bold">{{ total_votes_cast }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Elections Table -->
+    <div class="card custom-card border-0 p-4 bg-white mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Recent Elections</h5>
+            <a href="{{ url_for('admin_elections') }}" class="btn btn-sm btn-outline-secondary rounded-pill">View All</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Total Votes</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in elections %}
+                        <tr>
+                            <td class="fw-semibold">{{ e.title }}</td>
+                            <td>
+                                {% if e.current_status == 'active' %}
+                                    <span class="badge badge-status-active"><i class="bi bi-record-circle me-1"></i> Active</span>
+                                {% elif e.current_status == 'upcoming' %}
+                                    <span class="badge badge-status-upcoming"><i class="bi bi-clock me-1"></i> Upcoming</span>
+                                {% else %}
+                                    <span class="badge badge-status-closed"><i class="bi bi-lock-fill me-1"></i> Closed</span>
+                                {% endif %}
+                            </td>
+                            <td class="small text-muted">{{ e.start_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td class="small text-muted">{{ e.end_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td><span class="badge bg-light text-dark fw-bold border">{{ e.total_votes }}</span></td>
+                            <td class="text-end">
+                                <a href="{{ url_for('admin_candidates', election_id=e.id) }}" class="btn btn-sm btn-outline-primary me-1" title="Manage Candidates"><i class="bi bi-people"></i></a>
+                                <a href="{{ url_for('admin_results', election_id=e.id) }}" class="btn btn-sm btn-outline-success me-1" title="View Results"><i class="bi bi-bar-chart"></i></a>
+                                <a href="{{ url_for('admin_election_edit', election_id=e.id) }}" class="btn btn-sm btn-outline-secondary" title="Edit Election"><i class="bi bi-pencil"></i></a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No elections found. Click "Create New Election" to get started.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

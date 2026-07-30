@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Verification Link Invalid - MatDan Portal{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6 text-center">
+            <div class="card custom-card p-4 p-md-5">
+                <div class="mb-3">
+                    <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-lg" style="width: 75px; height: 75px;">
+                        <i class="bi bi-shield-x display-5"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold mb-2 text-danger">Verification Link Invalid or Expired</h3>
+                <p class="text-secondary mb-4">
+                    The email verification link is either invalid or has expired after 1 hour. Please request a new verification link below.
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('resend_verification') }}" class="btn btn-primary-custom rounded-pill py-2 fs-6 mb-2">
+                        <i class="bi bi-envelope-at me-1"></i> Resend Verification Email
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-secondary rounded-pill py-2">
+                        Return to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

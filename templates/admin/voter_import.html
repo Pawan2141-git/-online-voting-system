@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Bulk Voter Import - MatDan Admin{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card custom-card p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <a href="{{ url_for('admin_voters') }}" class="btn btn-outline-secondary btn-sm rounded-circle" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h3 class="fw-bold mb-0"><i class="bi bi-file-earmark-arrow-up text-primary me-2"></i> Bulk Voter Import</h3>
+                        <p class="text-muted small mb-0">Upload a CSV file containing voters list to register multiple voter accounts at once</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-info border-0 rounded-3 mb-4">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-info-circle-fill me-1"></i> Expected CSV Format:</h6>
+                    <p class="small mb-1">Your CSV file should include a header row with the following column headers:</p>
+                    <code class="d-block p-2 bg-white rounded border text-dark font-monospace mb-2">full_name,email,voter_id,password</code>
+                    <p class="small mb-0 text-muted">Duplicates with existing emails or EPIC numbers will be automatically skipped.</p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-4">
+                        {{ form.csv_file.label(class="form-label fw-semibold") }}
+                        {{ form.csv_file(class="form-control form-control-lg rounded-3") }}
+                        {% if form.csv_file.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.csv_file.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin_voters') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                        {{ form.submit(class="btn btn-primary-custom rounded-pill px-4") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

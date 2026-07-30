@@ -1,0 +1,616 @@
+/* Custom Styling for MatDan India - Digital Online Voting Portal */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary-color: #002B66; /* Ashoka Navy Blue */
+  --primary-hover: #001F4D;
+  --saffron-color: #FF9933; /* Indian Saffron */
+  --emerald-green: #138808; /* Indian Flag Green */
+  --accent-color: #0F52BA;
+  --dark-bg: #0A192F;
+  --card-bg: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --border-color: #E2E8F0;
+}
+
+/* Dark Mode Color Token Overrides */
+[data-theme="dark"] {
+  --primary-color: #38BDF8;
+  --primary-hover: #0284C7;
+  --dark-bg: #030712;
+  --card-bg: #151D2A;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --border-color: #263346;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #F8FAFC;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(255, 153, 51, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(19, 136, 8, 0.04) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(0, 43, 102, 0.03) 0px, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2002B66' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] body {
+  background-color: #0B0F17;
+  color: #F8FAFC;
+}
+
+/* Tricolor Top Accent Line */
+.tricolor-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+  width: 100%;
+}
+
+/* Navbar */
+.navbar-custom {
+  background: linear-gradient(135deg, rgba(10, 25, 47, 0.95) 0%, rgba(0, 43, 102, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.5px;
+  color: #FFFFFF !important;
+}
+
+.navbar-brand i {
+  color: var(--saffron-color);
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #CBD5E1 !important;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #FFFFFF !important;
+}
+
+/* Hero Section */
+.hero-section {
+  background: 
+    linear-gradient(135deg, rgba(10, 25, 47, 0.88) 0%, rgba(0, 43, 102, 0.85) 50%, rgba(30, 27, 75, 0.9) 100%),
+    url('../images/hero_bg.png') no-repeat center center;
+  background-size: cover;
+  color: white;
+  padding: 5rem 0;
+  border-radius: 0 0 2rem 2rem;
+  box-shadow: 0 12px 35px rgba(10, 25, 47, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-badge {
+  background: rgba(255, 153, 51, 0.2);
+  border: 1px solid rgba(255, 153, 51, 0.5);
+  backdrop-filter: blur(8px);
+  color: #FFB366;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 1.3rem;
+  border-radius: 50rem;
+  display: inline-block;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Cards & Glassmorphism */
+.custom-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.3s ease;
+}
+
+[data-theme="dark"] .custom-card, [data-theme="dark"] .card {
+  background-color: #151D2A !important;
+  border-color: #263346 !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .text-muted, [data-theme="dark"] .text-secondary {
+  color: #94A3B8 !important;
+}
+
+[data-theme="dark"] .bg-white {
+  background-color: #151D2A !important;
+}
+
+[data-theme="dark"] .table {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .table-light {
+  background-color: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+  background-color: #1E293B !important;
+}
+
+[data-theme="dark"] .form-control, [data-theme="dark"] .form-select {
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+.custom-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 153, 51, 0.4);
+  box-shadow: 0 18px 30px -5px rgba(0, 43, 102, 0.12), 0 8px 12px -3px rgba(0, 0, 0, 0.04);
+}
+
+/* Status Badges */
+.badge-status-active {
+  background-color: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+  font-weight: 600;
+  padding: 0.35em 0.75em;
+  border-radius: 50rem;
+}
+
+.badge-status-upcoming {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+  font-weight: 600;
+  padding: 0.35em 0.75em;
+  border-radius: 50rem;
+}
+
+.badge-status-closed {
+  background-color: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+  font-weight: 600;
+  padding: 0.35em 0.75em;
+  border-radius: 50rem;
+}
+
+/* Candidate Radio Card for Voting */
+.candidate-radio-card {
+  cursor: pointer;
+  border: 2px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  position: relative;
+}
+
+.candidate-radio-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 20px rgba(0, 43, 102, 0.15);
+}
+
+.candidate-radio-card input[type="radio"] {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  accent-color: var(--saffron-color);
+}
+
+.candidate-radio-card.selected {
+  border-color: var(--saffron-color);
+  background-color: #FFF9F2;
+  box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.3);
+}
+
+[data-theme="dark"] .candidate-radio-card.selected {
+  background-color: #2D1E12 !important;
+  border-color: var(--saffron-color) !important;
+}
+
+/* Candidate Avatar */
+.candidate-avatar {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #E2E8F0;
+}
+
+/* Buttons */
+.btn-primary-custom {
+  background-color: var(--saffron-color);
+  border-color: var(--saffron-color);
+  color: #FFFFFF;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-primary-custom:hover {
+  background-color: #E68A00;
+  border-color: #E68A00;
+  color: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(255, 153, 51, 0.4);
+}
+
+/* Countdown Timer */
+.countdown-box {
+  background: linear-gradient(135deg, #0A192F 0%, #002B66 100%);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  display: inline-flex;
+  gap: 1rem;
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(0, 43, 102, 0.2);
+}
+
+.countdown-unit {
+  text-align: center;
+}
+
+.countdown-unit span {
+  display: block;
+  font-size: 0.65rem;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  color: #94A3B8;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  background-color: #0A192F;
+  color: #94A3B8;
+  padding: 2.2rem 0;
+  border-top: 1px solid #1E293B;
+}
+
+/* Floating AI Chatbot Assistant Widget */
+#matdan-chat-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1050;
+}
+
+/* Toggle Button */
+#matdan-chat-toggle {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #002B66 0%, #0F52BA 50%, #FF9933 100%);
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 8px 20px rgba(0, 43, 102, 0.3);
+  transition: opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+#matdan-chat-toggle:hover {
+  opacity: 0.95;
+  box-shadow: 0 10px 25px rgba(0, 43, 102, 0.4);
+}
+
+.chat-pulse-dot {
+  width: 10px;
+  height: 10px;
+}
+
+/* Chat Drawer Box */
+#matdan-chat-box {
+  position: absolute;
+  bottom: 76px;
+  right: 0;
+  width: 380px;
+  max-width: 92vw;
+  height: 520px;
+  border-radius: 1.25rem !important;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+}
+
+
+@keyframes slideUpChat {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Header */
+.bg-gradient-header {
+  background: linear-gradient(135deg, #0A192F 0%, #002B66 60%, #1E1B4B 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-bot-avatar-header {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #FF9933 0%, #E68A00 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.status-indicator-dot {
+  width: 7px;
+  height: 7px;
+  background-color: #10B981;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 6px #10B981;
+}
+
+.btn-icon-glass {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-icon-glass:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+/* Body & Messages */
+#matdan-chat-body {
+  flex: 1;
+  background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+  scrollbar-width: thin;
+}
+
+[data-theme="dark"] #matdan-chat-body {
+  background: linear-gradient(180deg, #0B0F17 0%, #0F172A 100%);
+}
+
+.welcome-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(226, 232, 240, 0.9) !important;
+  backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .welcome-card {
+  background: rgba(21, 29, 42, 0.85);
+  border-color: rgba(38, 51, 70, 0.9) !important;
+  color: #F8FAFC;
+}
+
+.welcome-avatar-wrapper {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, rgba(255, 153, 51, 0.15) 0%, rgba(0, 43, 102, 0.1) 100%);
+  border-radius: 50%;
+}
+
+.bot-msg-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #002B66 0%, #0F52BA 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+.user-msg-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #FF9933 0%, #E68A00 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+.bot-msg-bubble {
+  border-radius: 1.2rem 1.2rem 1.2rem 0.2rem !important;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="dark"] .bot-msg-bubble {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+.user-msg-bubble {
+  background: linear-gradient(135deg, #002B66 0%, #0F52BA 100%);
+  border-radius: 1.2rem 1.2rem 0.2rem 1.2rem !important;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.small-time {
+  font-size: 0.68rem;
+}
+
+/* Typing Indicator Animation */
+.typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  background-color: #002B66;
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounceDots 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounceDots {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* Footer & Input */
+.bg-glass-footer {
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+[data-theme="dark"] .bg-glass-footer {
+  background: rgba(15, 23, 42, 0.95);
+  border-top-color: rgba(38, 51, 70, 0.8) !important;
+}
+
+.quick-chip {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 43, 102, 0.15);
+  color: var(--text-primary);
+  font-size: 0.76rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.quick-chip:hover {
+  background: #FFF9F2;
+  border-color: var(--saffron-color);
+  color: var(--saffron-color);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .quick-chip {
+  background: #1E293B;
+  border-color: #334155;
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .quick-chip:hover {
+  background: #2D1E12;
+  border-color: var(--saffron-color);
+}
+
+.input-group-pill {
+  background-color: #F1F5F9;
+  border-radius: 50rem;
+  padding: 3px;
+  border: 1px solid #E2E8F0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group-pill:focus-within {
+  border-color: var(--saffron-color);
+  box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.25) !important;
+}
+
+[data-theme="dark"] .input-group-pill {
+  background-color: #0F172A;
+  border-color: #334155;
+}
+
+.btn-gradient-send {
+  background: linear-gradient(135deg, #FF9933 0%, #E68A00 100%);
+  border: none;
+  border-radius: 50rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-gradient-send:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 153, 51, 0.4);
+}
+
+.max-w-85 { max-width: 85%; }
+.max-w-90 { max-width: 90%; }
+
+/* ==========================================================================
+   Mobile-First Responsive Layout Utilities & Breakpoints
+   ========================================================================== */
+
+/* Touch Target Enhancements for Mobile Devices */
+@media (max-width: 768px) {
+  .btn, .form-control, .form-select, .candidate-radio-card {
+    min-height: 44px;
+  }
+  
+  /* Candidate Radio Cards vertical stacking on phones */
+  .candidate-radio-card {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+  
+  .candidate-photo-thumb {
+    width: 60px;
+    height: 60px;
+  }
+  
+  /* Dynamic font sizing for headers on phone viewports */
+  h1, .display-4, .display-5 {
+    font-size: 1.75rem !important;
+  }
+  
+  h2, .display-6 {
+    font-size: 1.4rem !important;
+  }
+
+  .navbar-brand img {
+    height: 36px !important;
+  }
+
+  .hero-section {
+    padding: 2.5rem 1rem !important;
+    text-align: center;
+  }
+
+  /* Chatbot Drawer Mobile Viewport Adaptation */
+  #matdan-chat-box {
+    width: calc(100vw - 2rem) !important;
+    right: 1rem !important;
+    left: 1rem !important;
+    bottom: 80px !important;
+    max-height: 75vh !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .card-body {
+    padding: 1.25rem !important;
+  }
+
+  .btn-group-responsive {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-group-responsive .btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+
+

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card custom-card p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <a href="{{ url_for('admin_elections') }}" class="btn btn-outline-secondary btn-sm rounded-circle" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h3 class="fw-bold mb-0">{{ title }}</h3>
+                        <p class="text-muted small mb-0">Fill in the election schedule and details</p>
+                    </div>
+                </div>
+
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label fw-semibold") }}
+                        {{ form.title(class="form-control rounded-3", placeholder="e.g. 2026 Student Body Presidential Election") }}
+                        {% if form.title.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.title.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label fw-semibold") }}
+                        {{ form.description(class="form-control rounded-3", rows=4, placeholder="Provide election rules, position responsibilities, or instructions for voters...") }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.description.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.start_time.label(class="form-label fw-semibold") }}
+                            {{ form.start_time(class="form-control rounded-3") }}
+                            {% if form.start_time.errors %}
+                                <div class="text-danger small mt-1">{% for e in form.start_time.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form.end_time.label(class="form-label fw-semibold") }}
+                            {{ form.end_time(class="form-control rounded-3") }}
+                            {% if form.end_time.errors %}
+                                <div class="text-danger small mt-1">{% for e in form.end_time.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.status.label(class="form-label fw-semibold") }}
+                        {{ form.status(class="form-select rounded-3") }}
+                        <small class="form-text text-muted">Status automatically syncs based on start/end times, but can be manually overridden if needed.</small>
+                        {% if form.status.errors %}
+                            <div class="text-danger small mt-1">{% for e in form.status.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin_elections') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                        {{ form.submit(class="btn btn-primary-custom rounded-pill px-4") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

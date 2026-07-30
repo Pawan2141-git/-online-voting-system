@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  voting-app:
+    build: .
+    container_name: matdan_voting_system
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=matdan-india-docker-secret-2026-key
+      - FLASK_ENV=production
+    volumes:
+      - ./voting_system.db:/app/voting_system.db
+    restart: unless-stopped

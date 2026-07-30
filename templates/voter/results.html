@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Results: {{ election.title }} - MatDan India{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="mb-4">
+        <a href="{{ url_for('voter_dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill mb-2">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <div>
+                <h2 class="fw-bold mb-1">Results: {{ election.title }}</h2>
+                <p class="text-muted small mb-0">Election Status: <span class="badge badge-status-{{ election.current_status }}">{{ election.current_status|upper }}</span> <span class="badge bg-danger text-white rounded-pill ms-2"><i class="bi bi-broadcast me-1"></i> LIVE</span></p>
+            </div>
+            {% if has_voted %}
+                <div class="badge bg-success-subtle text-success border border-success-subtle p-2 px-3 rounded-pill">
+                    <i class="bi bi-check-circle-fill me-1"></i> Your vote has been safely recorded
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card custom-card p-3 bg-white border-0">
+                <div class="text-muted small">Total Votes Cast</div>
+                <div class="fs-2 fw-bold text-primary" id="voterTotalVotes">{{ total_votes }}</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card custom-card p-3 bg-white border-0">
+                <div class="text-muted small">Election Winner / Leader</div>
+                <div class="fs-2 fw-bold text-success" id="voterLeaderName">
+                    {% if results_data and total_votes > 0 %}
+                        {{ results_data[0].candidate.name }}
+                    {% else %}
+                        No votes recorded
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card custom-card p-4 bg-white h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i> Vote Distribution (Live)</h5>
+                <div style="position: relative; height: 300px;">
+                    <canvas id="voterResultsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card custom-card p-4 bg-white h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-trophy-fill text-warning me-2"></i> Candidate Results Breakdown</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Candidate</th>
+                                <th>Party</th>
+                                <th>Votes</th>
+                                <th>Share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in results_data %}
+                                <tr id="voter-candidate-row-{{ item.candidate.id }}">
+                                    <td>
+                                        <div class="fw-bold">
+                                            {{ item.candidate.name }}
+                                            {% if loop.first and total_votes > 0 %}
+                                                <span class="badge bg-warning text-dark ms-1"><i class="bi bi-trophy-fill"></i> Leader</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="small text-muted">{{ item.candidate.party }}</td>
+                                    <td class="fw-bold fs-6" id="voter-votes-{{ item.candidate.id }}">{{ item.votes }}</td>
+                                    <td style="width: 140px;">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress flex-grow-1" style="height: 8px;">
+                                                <div class="progress-bar bg-primary" id="voter-bar-{{ item.candidate.id }}" role="progressbar" style="width: {{ item.percentage }}%;"></div>
+                                            </div>
+                                            <span class="small fw-semibold" id="voter-pct-{{ item.candidate.id }}">{{ item.percentage }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">No candidates found.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let chartInstance = null;
+    const canvas = document.getElementById('voterResultsChart');
+
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const candidateNames = [{% for item in results_data %}"{{ item.candidate.name }}"{% if not loop.last %}, {% endif %}{% endfor %}];
+        const voteCounts = [{% for item in results_data %}{{ item.votes }}{% if not loop.last %}, {% endif %}{% endfor %}];
+
+        chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: candidateNames,
+                datasets: [{
+                    label: 'Votes',
+                    data: voteCounts,
+                    backgroundColor: [
+                        '#0F52BA', '#FF9933', '#138808', '#F59E0B', '#EC4899', '#8B5CF6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    if (typeof io !== 'undefined') {
+        const socket = io();
+        socket.on('vote_update', function(data) {
+            if (data && data.election_id === {{ election.id }}) {
+                const totalElem = document.getElementById('voterTotalVotes');
+                if (totalElem) totalElem.textContent = data.total_votes;
+
+                if (data.candidates && data.candidates.length > 0 && data.total_votes > 0) {
+                    const leaderElem = document.getElementById('voterLeaderName');
+                    if (leaderElem) leaderElem.textContent = data.candidates[0].name;
+                }
+
+                if (chartInstance) {
+                    chartInstance.data.labels = data.candidates.map(c => c.name);
+                    chartInstance.data.datasets[0].data = data.candidates.map(c => c.votes);
+                    chartInstance.update();
+                }
+
+                data.candidates.forEach(c => {
+                    const voteElem = document.getElementById('voter-votes-' + c.id);
+                    const pctElem = document.getElementById('voter-pct-' + c.id);
+                    const barElem = document.getElementById('voter-bar-' + c.id);
+                    if (voteElem) voteElem.textContent = c.votes;
+                    if (pctElem) pctElem.textContent = c.percentage + '%';
+                    if (barElem) barElem.style.width = c.percentage + '%';
+                });
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

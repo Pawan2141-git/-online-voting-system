@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Voter Dashboard - VoteDirect{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Welcome Header -->
+    <div class="card custom-card bg-white p-4 mb-4 border-0">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h3 class="fw-bold mb-1">Welcome back, {{ current_user.full_name }}! 👋</h3>
+                <p class="text-muted small mb-0"><i class="bi bi-card-heading me-1"></i> Voter ID: <code>{{ current_user.voter_id }}</code> • Status: <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Verified Voter</span></p>
+            </div>
+            <div>
+                <span class="badge bg-light text-dark border p-2 px-3 rounded-pill small">
+                    <i class="bi bi-check2-circle text-primary me-1"></i> Votes Cast So Far: <strong>{{ current_user.vote_records|length }}</strong>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Elections Listing Header -->
+    <h4 class="fw-bold mb-3"><i class="bi bi-box-seam text-primary me-2"></i> Elections Catalog</h4>
+
+    {% if elections %}
+        <div class="row g-4 mb-5">
+            {% for e in elections %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card custom-card h-100 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                {% if e.current_status == 'active' %}
+                                    <span class="badge badge-status-active"><i class="bi bi-record-circle me-1"></i> Active</span>
+                                {% elif e.current_status == 'upcoming' %}
+                                    <span class="badge badge-status-upcoming"><i class="bi bi-clock me-1"></i> Upcoming</span>
+                                {% else %}
+                                    <span class="badge badge-status-closed"><i class="bi bi-lock-fill me-1"></i> Closed</span>
+                                {% endif %}
+
+                                {% if e.id in voted_election_ids %}
+                                    <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Voted</span>
+                                {% endif %}
+                            </div>
+
+                            <h5 class="fw-bold mb-2">{{ e.title }}</h5>
+                            <p class="text-secondary small mb-3">{{ e.description|truncate(110) }}</p>
+                        </div>
+
+                        <div>
+                            {% if e.current_status == 'active' %}
+                                <div class="bg-light p-2 rounded-3 text-center mb-3">
+                                    <small class="text-muted d-block mb-1">Voting Closes In:</small>
+                                    <div class="countdown-box" data-countdown="{{ e.seconds_remaining() }}">
+                                        <div class="countdown-unit"><span class="cd-days">00</span><span>Days</span></div>:
+                                        <div class="countdown-unit"><span class="cd-hours">00</span><span>Hrs</span></div>:
+                                        <div class="countdown-unit"><span class="cd-minutes">00</span><span>Min</span></div>:
+                                        <div class="countdown-unit"><span class="cd-seconds">00</span><span>Sec</span></div>
+                                    </div>
+                                </div>
+
+                                {% if e.id in voted_election_ids %}
+                                    <a href="{{ url_for('voter_results', election_id=e.id) }}" class="btn btn-outline-success w-100 rounded-pill fw-semibold">
+                                        <i class="bi bi-check-lg me-1"></i> View Live Standings
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('voter_vote', election_id=e.id) }}" class="btn btn-primary-custom w-100 rounded-pill">
+                                        <i class="bi bi-check2-square me-1"></i> Cast Vote Now
+                                    </a>
+                                {% endif %}
+
+                            {% elif e.current_status == 'upcoming' %}
+                                <div class="alert alert-secondary text-center small mb-3 py-2">
+                                    <i class="bi bi-calendar-event me-1"></i> Starts: {{ e.start_time.strftime('%b %d, %Y at %H:%M UTC') }}
+                                </div>
+                                <button class="btn btn-secondary w-100 rounded-pill" disabled><i class="bi bi-hourglass-split me-1"></i> Opens Soon</button>
+
+                            {% else %}
+                                <div class="alert alert-light text-center small mb-3 py-2 border">
+                                    <i class="bi bi-lock me-1"></i> Election Ended
+                                </div>
+                                <a href="{{ url_for('voter_results', election_id=e.id) }}" class="btn btn-outline-primary w-100 rounded-pill">
+                                    <i class="bi bi-bar-chart-fill me-1"></i> View Final Results
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card custom-card p-5 text-center bg-white">
+            <div class="fs-1 text-muted mb-2"><i class="bi bi-inbox"></i></div>
+            <h5 class="fw-semibold mb-1">No Elections Available</h5>
+            <p class="text-muted small">There are currently no active or scheduled elections.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

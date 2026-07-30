@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Candidates - {{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a href="{{ url_for('admin_elections') }}" class="text-secondary text-decoration-none small"><i class="bi bi-arrow-left"></i> Elections</a>
+                <span class="text-muted">/</span>
+                <span class="badge badge-status-{{ election.current_status }}">{{ election.current_status|upper }}</span>
+            </div>
+            <h2 class="fw-bold mb-0">Candidates: {{ election.title }}</h2>
+        </div>
+        <a href="{{ url_for('admin_candidate_create', election_id=election.id) }}" class="btn btn-primary-custom rounded-pill">
+            <i class="bi bi-person-plus-fill me-1"></i> Add Candidate
+        </a>
+    </div>
+
+    {% if candidates %}
+        <div class="row g-4">
+            {% for c in candidates %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card custom-card h-100 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="text-center mb-3">
+                                {% if c.photo_url %}
+                                    <img src="{{ c.photo_url }}" alt="{{ c.name }}" class="candidate-avatar shadow-sm mb-2">
+                                {% else %}
+                                    <div class="candidate-avatar bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center mb-2 fs-2 fw-bold">
+                                        {{ c.name[0] }}
+                                    </div>
+                                {% endif %}
+                                <h5 class="fw-bold mb-1">{{ c.name }}</h5>
+                                <span class="badge bg-secondary-subtle text-secondary border px-3 py-1 rounded-pill">{{ c.party }}</span>
+                            </div>
+                            <p class="text-muted small mb-3">{{ c.bio or "No manifesto or biography provided." }}</p>
+                        </div>
+                        <div class="border-top pt-3 d-flex justify-content-between align-items-center">
+                            <span class="small text-muted"><i class="bi bi-box-seam me-1"></i> Votes: <strong>{{ c.vote_count }}</strong></span>
+                            <div class="btn-group">
+                                <a href="{{ url_for('admin_candidate_edit', candidate_id=c.id) }}" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil me-1"></i> Edit</a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteCandidateModal{{ c.id }}" title="Delete"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Delete Candidate Modal -->
+                        <div class="modal fade" id="deleteCandidateModal{{ c.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Delete</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body text-start">
+                                        Remove candidate <strong>"{{ c.name }}"</strong> from {{ election.title }}?
+                                    </div>
+                                    <div class="modal-footer bg-light">
+                                        <button type="button" class="btn btn-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                                        <form action="{{ url_for('admin_candidate_delete', candidate_id=c.id) }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-pill"><i class="bi bi-trash me-1"></i> Remove Candidate</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card custom-card p-5 text-center bg-white">
+            <div class="fs-1 text-muted mb-2"><i class="bi bi-person-slash"></i></div>
+            <h5 class="fw-semibold mb-1">No Candidates Added Yet</h5>
+            <p class="text-muted small mb-3">Add candidates for voters to choose from when voting opens.</p>
+            <div>
+                <a href="{{ url_for('admin_candidate_create', election_id=election.id) }}" class="btn btn-primary-custom rounded-pill">
+                    <i class="bi bi-plus-lg me-1"></i> Add First Candidate
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

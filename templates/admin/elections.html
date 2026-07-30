@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Elections - Admin{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-journal-check text-primary me-2"></i> Manage Elections</h2>
+            <p class="text-muted small mb-0">Create, configure, and monitor election campaigns</p>
+        </div>
+        <a href="{{ url_for('admin_election_create') }}" class="btn btn-primary-custom rounded-pill">
+            <i class="bi bi-plus-lg me-1"></i> Create New Election
+        </a>
+    </div>
+
+    <div class="card custom-card border-0 p-4 bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Election Title</th>
+                        <th>Status</th>
+                        <th>Candidates</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Votes</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in elections %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ e.title }}</div>
+                                <small class="text-muted">{{ e.description|truncate(70) }}</small>
+                            </td>
+                            <td>
+                                {% if e.current_status == 'active' %}
+                                    <span class="badge badge-status-active"><i class="bi bi-record-circle me-1"></i> Active</span>
+                                {% elif e.current_status == 'upcoming' %}
+                                    <span class="badge badge-status-upcoming"><i class="bi bi-clock me-1"></i> Upcoming</span>
+                                {% else %}
+                                    <span class="badge badge-status-closed"><i class="bi bi-lock-fill me-1"></i> Closed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_candidates', election_id=e.id) }}" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill text-decoration-none">
+                                    <i class="bi bi-person-badge me-1"></i> {{ e.candidates|length }} Candidates
+                                </a>
+                            </td>
+                            <td class="small text-muted">{{ e.start_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td class="small text-muted">{{ e.end_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td><span class="badge bg-light text-dark fw-bold border">{{ e.total_votes }}</span></td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a href="{{ url_for('admin_candidates', election_id=e.id) }}" class="btn btn-sm btn-outline-primary" title="Manage Candidates"><i class="bi bi-people me-1"></i> Candidates</a>
+                                    <a href="{{ url_for('admin_results', election_id=e.id) }}" class="btn btn-sm btn-outline-success" title="View Results"><i class="bi bi-bar-chart me-1"></i> Results</a>
+                                    <a href="{{ url_for('admin_election_edit', election_id=e.id) }}" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ e.id }}" title="Delete"><i class="bi bi-trash"></i></button>
+                                </div>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="deleteModal{{ e.id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Delete</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                <p>Are you sure you want to delete election <strong>"{{ e.title }}"</strong>?</p>
+                                                <p class="text-danger small mb-0"><i class="bi bi-exclamation-circle me-1"></i> Warning: This action will permanently remove all associated candidates and cast votes!</p>
+                                            </div>
+                                            <div class="modal-footer bg-light">
+                                                <button type="button" class="btn btn-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ url_for('admin_election_delete', election_id=e.id) }}" method="POST" class="d-inline">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                    <button type="submit" class="btn btn-danger btn-sm rounded-pill"><i class="bi bi-trash me-1"></i> Permanently Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No elections defined. Click "Create New Election" above.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
