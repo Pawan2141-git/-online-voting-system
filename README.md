@@ -75,8 +75,8 @@ Running `python seed.py` populates the database with demo accounts:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/online-voting-system.git
-cd online-voting-system
+git clone https://github.com/Pawan2141-git/-online-voting-system.git
+cd -online-voting-system
 
 # 2. Create and activate virtual environment
 python -m venv .venv
