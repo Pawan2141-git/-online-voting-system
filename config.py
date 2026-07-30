@@ -1,11 +1,21 @@
 import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DB_PATH = os.path.join(BASE_DIR, 'voting_system.db').replace('\\', '/')
+
+db_url = os.environ.get('DATABASE_URL')
+if db_url:
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+else:
+    if os.access(BASE_DIR, os.W_OK):
+        db_path = os.path.join(BASE_DIR, 'voting_system.db').replace('\\', '/')
+    else:
+        db_path = os.path.join('/tmp', 'voting_system.db')
+    db_url = f"sqlite:///{db_path}"
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'online-voting-system-secret-key-2026-safe-key'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f"sqlite:///{DB_PATH}"
+    SQLALCHEMY_DATABASE_URI = db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max upload size
