@@ -1,10 +1,13 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import request, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
 import hashlib
+
+def utc_now_naive():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 db = SQLAlchemy()
 
@@ -23,7 +26,7 @@ class User(UserMixin, db.Model):
     is_verified = db.Column(db.Boolean, default=True, nullable=False)
 
     verification_sent_at = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utc_now_naive)
 
     # Relationships
     vote_records = db.relationship('VoteRecord', backref='user', lazy=True, cascade='all, delete-orphan')
@@ -90,7 +93,7 @@ class Election(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='upcoming')  # 'upcoming', 'active', 'closed'
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utc_now_naive)
 
     # Relationships
     candidates = db.relationship('Candidate', backref='election', lazy=True, cascade='all, delete-orphan')
@@ -99,7 +102,7 @@ class Election(db.Model):
 
     def update_status(self):
         """Dynamically evaluate and update status based on current UTC time."""
-        now = datetime.utcnow()
+        now = utc_now_naive()
         start = self.start_time.replace(tzinfo=None) if self.start_time else now
         end = self.end_time.replace(tzinfo=None) if self.end_time else now
 
@@ -118,7 +121,7 @@ class Election(db.Model):
 
     @property
     def current_status(self):
-        now = datetime.utcnow()
+        now = utc_now_naive()
         start = self.start_time.replace(tzinfo=None) if self.start_time else now
         end = self.end_time.replace(tzinfo=None) if self.end_time else now
 
@@ -134,7 +137,7 @@ class Election(db.Model):
         return Vote.query.filter_by(election_id=self.id).count()
 
     def seconds_remaining(self):
-        now = datetime.utcnow()
+        now = utc_now_naive()
         end = self.end_time.replace(tzinfo=None) if self.end_time else now
         diff = (end - now).total_seconds()
         return max(0, int(diff))
@@ -171,7 +174,7 @@ class VoteRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     election_id = db.Column(db.Integer, db.ForeignKey('elections.id'), nullable=False)
-    voted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    voted_at = db.Column(db.DateTime, default=utc_now_naive)
 
     __table_args__ = (
         db.UniqueConstraint('user_id', 'election_id', name='unique_user_election_vote'),
@@ -189,7 +192,7 @@ class Vote(db.Model):
     election_id = db.Column(db.Integer, db.ForeignKey('elections.id'), nullable=False)
     candidate_id = db.Column(db.Integer, db.ForeignKey('candidates.id'), nullable=False)
     voter_hash = db.Column(db.String(64), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=utc_now_naive)
 
     @staticmethod
     def generate_hash(user_id, election_id, secret_salt="VOTING_ANONYMOUS_SALT_2026"):
@@ -208,7 +211,7 @@ class AuditLog(db.Model):
     action = db.Column(db.String(100), nullable=False)
     details = db.Column(db.Text, nullable=True)
     ip_address = db.Column(db.String(45), nullable=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=utc_now_naive)
 
     @staticmethod
     def log(action, details=None, user_id=None, ip_address=None):
@@ -237,7 +240,7 @@ class ChatLog(db.Model):
     user_message = db.Column(db.Text, nullable=False)
     bot_response = db.Column(db.Text, nullable=False)
     ip_address = db.Column(db.String(45), nullable=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=utc_now_naive)
 
     def __repr__(self):
         return f'<ChatLog User:{self.user_id} at {self.timestamp}>'
@@ -252,7 +255,7 @@ class PushSubscription(db.Model):
     endpoint = db.Column(db.Text, nullable=False, unique=True)
     p256dh = db.Column(db.Text, nullable=True)
     auth = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utc_now_naive)
 
     def __repr__(self):
         return f'<PushSubscription User:{self.user_id}>'

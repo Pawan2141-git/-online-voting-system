@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, DateTimeLocalField, RadioField, DateField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
-from datetime import datetime
+from datetime import datetime, timezone
 from models import User
 
 INDIAN_STATES = [
@@ -44,7 +44,7 @@ class RegisterForm(FlaskForm):
 
     def validate_date_of_birth(self, field):
         if field.data:
-            today = datetime.utcnow().date()
+            today = datetime.now(timezone.utc).date()
             age = today.year - field.data.year - ((today.month, today.day) < (field.data.month, field.data.day))
             if age < 18:
                 raise ValidationError(f'Voter Ineligible: You are currently {age} years old. You must be at least 18 years old to register to vote in India.')

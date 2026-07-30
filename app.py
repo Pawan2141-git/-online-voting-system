@@ -811,7 +811,7 @@ def voter_vote(election_id):
 
     if form.validate_on_submit():
         selected_candidate_id = form.candidate_id.data
-        candidate = Candidate.query.get(selected_candidate_id)
+        candidate = db.session.get(Candidate, selected_candidate_id)
         if not candidate or candidate.election_id != election_id:
             flash('Invalid candidate selected.', 'danger')
             return redirect(url_for('voter_vote', election_id=election_id))
