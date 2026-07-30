@@ -158,7 +158,7 @@ def test_admin_export_endpoints(client):
     """Test CSV and PDF election result exports."""
     now = datetime.now(timezone.utc)
     with app.app_context():
-        admin = User(full_name="ECI Officer", email="admin@eci.gov.in", voter_id="ADM001", role="admin", is_verified=True)
+        admin = User(full_name="ECI Officer", email="export_admin@eci.gov.in", voter_id="ADM002", role="admin", is_verified=True)
         admin.set_password("admin123")
         db.session.add(admin)
         db.session.commit()
@@ -177,7 +177,7 @@ def test_admin_export_endpoints(client):
         db.session.commit()
         election_id = election.id
 
-    client.post('/login', data={'identity': 'admin@eci.gov.in', 'password': 'admin123'}, follow_redirects=True)
+    client.post('/login', data={'identity': 'export_admin@eci.gov.in', 'password': 'admin123'}, follow_redirects=True)
     
     # Test CSV Export
     res_csv = client.get(f'/admin/export/{election_id}/csv')
